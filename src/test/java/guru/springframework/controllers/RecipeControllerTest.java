@@ -1,6 +1,7 @@
 package guru.springframework.controllers;
 
 import guru.springframework.commands.RecipeCommand;
+import guru.springframework.domain.Category;
 import guru.springframework.domain.Recipe;
 import guru.springframework.exceptions.ResourceNotFoundException;
 import guru.springframework.services.CategoryService;
@@ -12,6 +13,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -107,9 +111,12 @@ public class RecipeControllerTest {
         RecipeCommand command = new RecipeCommand();
         command.setId(2L);
 
+        Category category = new Category();
+        category.setId(1L);
+
         when(recipeService.findCommandById(any())).thenReturn(command);
         when(recipeService.saveRecipeCommand(any())).thenReturn(command);
-        when(categoryService.selectAllCategories()).thenReturn(anyList());
+        when(categoryService.selectAllCategories()).thenReturn(List.of(category));
 
         mockMvc.perform(post("/recipe")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -119,9 +126,6 @@ public class RecipeControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("recipe"))
-                .andExpect(model().attributeExists("recipeIngredients"))
-                .andExpect(model().attributeExists("difficultyValues"))
-                .andExpect(model().attributeExists("allCategories"))
                 .andExpect(view().name("recipe/form"));
     }
 
